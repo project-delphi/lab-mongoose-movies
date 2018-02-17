@@ -40,14 +40,47 @@ const oneRenderConstructor = (req, res, next) =>{
 }
 
 
-//########### Routes
+const newCeleb = (req,res,next) => {
+  res.render('celebrities/new')
+}
 
-/* GET home page. */
+const postCeleb = (req,res,next) => {
+  const celeb = new Celebrity({
+    name:         req.body.name,
+    occupation:   req.body.occupation,
+    catchPhrase:  req.body.catchPhrase
+  })
+  celeb.save( (err)=>{ 
+    err ? res.render('celebrities/new') 
+      : listCelebs(req,res,next)
+  })
+}
 
+const editCeleb = (req,res,next) => {
+
+
+}
+
+const deleteCeleb = (req,res,next) => {
+    Celebrity.findByIdAndRemove(req.params.id, (err, data)=>{
+    err ? (()=>{ next(); return err })()
+      : listCelebs(req, res, next)
+  })
+
+}
+
+// ################## Routes ###################
+// home page
 router.get('/', listCelebs)
-
-// ############## Show one Celeb
+// Show one Celeb
 router.get('/:id', showCeleb)
+// create new celeb
+router.get('/new', newCeleb)
+// post form of new celeb
+router.post('/', postCeleb)
 
+router.post('/:id/edit', editCeleb)
+
+router.post('/:id/delete', deleteCeleb)
 
 module.exports = router
